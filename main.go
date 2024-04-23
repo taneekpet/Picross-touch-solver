@@ -149,6 +149,7 @@ func Init(dimension int, rowHint, colHint [][]int) Board {
 	}
 	b.solverFunctionList = []func() (bool, bool){
 		b.sumToDimension,
+		b.checkStartOrEndOf,
 		// to be added
 	}
 	return b

@@ -52,8 +52,46 @@ func (b *Board) sumToDimension() (resultChanged, resultConflicted bool) {
 			resultChanged = resultChanged || changed
 		}
 	}
-	return false, false
+	return
 }
 
+// =======================================================================================
+
+func (b *Board) checkStartOrEndOfRow(row int) (resultChanged, resultConflicted bool) {
+	// start
+	if b.solution[row][0] == FILLED {
+		for col := 0; col < b.rowHint[row][0]; col++ {
+			changed, conflicted := b.fillPosition(row, col, FILLED)
+			if conflicted {
+				return resultChanged, true
+			}
+			resultChanged = resultChanged || changed
+		}
+	}
+	// end
+	if b.solution[row][b.dimension-1] == FILLED {
+		for col := b.dimension - 1; col >= 0; col-- {
+			changed, conflicted := b.fillPosition(row, col, FILLED)
+			if conflicted {
+				return resultChanged, true
+			}
+			resultChanged = resultChanged || changed
+		}
+	}
+	return
+}
+
+func (b *Board) checkStartOrEndOf() (resultChanged, resultConflicted bool) {
+	for i := 0; i < b.dimension; i++ {
+		changed, conflicted := b.checkStartOrEndOfRow(i)
+		if conflicted {
+			return resultChanged, true
+		}
+		resultChanged = resultChanged || changed
+	}
+	return
+}
+
+// =======================================================================================
+
 // to add more solver
-// consecutive at the end or start
