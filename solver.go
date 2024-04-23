@@ -94,4 +94,30 @@ func (b *Board) checkStartOrEndOf() (resultChanged, resultConflicted bool) {
 
 // =======================================================================================
 
+func (b *Board) checkEmptyRow(row int) (resultChanged, resultConflicted bool) {
+	if sumListWithSeparator(b.rowHint[row]) == -1 {
+		for col := 0; col < b.rowHint[row][0]; col++ {
+			changed, conflicted := b.fillPosition(row, col, EMPTY)
+			if conflicted {
+				return resultChanged, true
+			}
+			resultChanged = resultChanged || changed
+		}
+	}
+	return
+}
+
+func (b *Board) checkEmpty() (resultChanged, resultConflicted bool) {
+	for i := 0; i < b.dimension; i++ {
+		changed, conflicted := b.checkEmptyRow(i)
+		if conflicted {
+			return resultChanged, true
+		}
+		resultChanged = resultChanged || changed
+	}
+	return
+}
+
+// =======================================================================================
+
 // to add more solver
