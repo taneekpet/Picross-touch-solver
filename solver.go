@@ -1,51 +1,59 @@
 package ptsolver
 
-func sumListWithSeparator(input []int) int {
-	result := 0
-	for _, hint := range input {
-		result += hint + 1
-	}
-	return result - 1
-}
-
-func (b *Board) fillRowWithHint(row int) (changed bool, conflicted bool) {
-	col := 0
-	for i, hint := range b.rowHint[row] {
-		if i != 0 {
-			if b.solution[row][col] != EMPTY { // changed
-				if b.solution[row][col] != UNSURE { // conflicted
-					return true, true
-				}
-				b.solution[row][col] = EMPTY
-				changed = true
-			}
-			col++
-		}
-		for count := 0; count < hint; count++ {
-			if b.solution[row][col] != FILLED { // changed
-				if b.solution[row][col] != UNSURE { // conflicted
-					return true, true
-				}
-				b.solution[row][col] = FILLED
-				changed = true
-			}
-			col++
-		}
-	}
-	return false, false
-}
-
-func (b *Board) sumToDimension() (bool, bool) {
+func (b *Board) countConsecutiveEmptyInRow(row int) (start, end int) {
 	for i := 0; i < b.dimension; i++ {
-		if sumListWithSeparator(b.rowHint[i]) == b.dimension {
-			changed, conflicted := b.fillRowWithHint(i)
+		if b.solution[row][i] != EMPTY {
+			break
+		}
+		start++
+	}
+	for i := b.dimension - 1; i >= 0; i-- {
+		if b.solution[row][i] != EMPTY {
+			break
+		}
+		end++
+	}
+	return
+}
+
+func (b *Board) fillFullRowWithHint(row, offset int) (resultChanged, resultConflicted bool) {
+	col := offset
+	for i, hint := range b.rowHint[row] {
+		// fill between
+		if i != 0 {
+			changed, conflicted := b.fillPosition(row, col, EMPTY)
 			if conflicted {
-				return changed, true
+				return resultChanged, true
 			}
+			resultChanged = resultChanged || changed
+			col++
+		}
+		// fill as hint
+		for count := 0; count < hint; count++ {
+			changed, conflicted := b.fillPosition(row, col, FILLED)
+			if conflicted {
+				return resultChanged, true
+			}
+			resultChanged = resultChanged || changed
+			col++
 		}
 	}
-	// to be implemented more
+	return
+}
+
+func (b *Board) sumToDimension() (resultChanged, resultConflicted bool) {
+	for i := 0; i < b.dimension; i++ {
+		emptyStart, emptyEnd := b.countConsecutiveEmptyInRow(i)
+		if emptyStart+sumListWithSeparator(b.rowHint[i])+emptyEnd == b.dimension {
+			changed, conflicted := b.fillFullRowWithHint(i, emptyStart)
+			if conflicted {
+				return resultChanged, true
+			}
+			resultChanged = resultChanged || changed
+		}
+	}
 	return false, false
 }
 
 // to add more solver
+// consecutive at the end or start

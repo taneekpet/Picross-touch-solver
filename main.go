@@ -24,6 +24,8 @@ type Board struct {
 	conflicted bool
 
 	solverFunctionList []func() (bool, bool)
+
+	rotatedDegree int
 }
 
 func (b *Board) PrettyPrint() error {
@@ -110,6 +112,17 @@ func (b *Board) Solve() bool {
 				b.conflicted = true
 				break
 			}
+			// use same function for column
+			b.rotateClockwise()
+
+			tmpChanged, conflicted = solver()
+			changed = changed || tmpChanged
+			if conflicted {
+				b.conflicted = true
+				break
+			}
+			// rotate back to original
+			b.rotateCounterClockwise()
 		}
 	}
 	return b.IsSolved()
@@ -129,9 +142,10 @@ func Init(dimension int, rowHint, colHint [][]int) Board {
 		emptySymbol:  " ",
 		filledSymbol: "X",
 
-		solution:   sol,
-		solved:     false,
-		conflicted: false,
+		solution:      sol,
+		solved:        false,
+		conflicted:    false,
+		rotatedDegree: 0,
 	}
 	b.solverFunctionList = []func() (bool, bool){
 		b.sumToDimension,
