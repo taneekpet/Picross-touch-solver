@@ -138,9 +138,10 @@ func Init(dimension int, rowHint, colHint [][]int) Board {
 		rowHint:   rowHint,
 		colHint:   colHint,
 
-		unsureSymbol: "?",
-		emptySymbol:  " ",
-		filledSymbol: "X",
+		unsureSymbol:     "?",
+		emptySymbol:      "O",
+		filledSymbol:     "X",
+		conflictedSymbol: "!",
 
 		solution:      sol,
 		solved:        false,
