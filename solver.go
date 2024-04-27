@@ -41,7 +41,7 @@ func (b *Board) fillFullRowWithHint(row, offset int) (resultChanged, resultConfl
 	return
 }
 
-func (b *Board) sumToDimension() (resultChanged, resultConflicted bool) {
+func sumToDimension(b *Board) (resultChanged, resultConflicted bool) {
 	for i := 0; i < b.dimension; i++ {
 		emptyStart, emptyEnd := b.countConsecutiveEmptyInRow(i)
 		if emptyStart+sumListWithSeparator(b.rowHint[i])+emptyEnd == b.dimension {
@@ -81,7 +81,7 @@ func (b *Board) checkStartOrEndOfRow(row int) (resultChanged, resultConflicted b
 	return
 }
 
-func (b *Board) checkStartOrEndOf() (resultChanged, resultConflicted bool) {
+func checkStartOrEndOf(b *Board) (resultChanged, resultConflicted bool) {
 	for i := 0; i < b.dimension; i++ {
 		changed, conflicted := b.checkStartOrEndOfRow(i)
 		if conflicted {
@@ -95,8 +95,8 @@ func (b *Board) checkStartOrEndOf() (resultChanged, resultConflicted bool) {
 // =======================================================================================
 
 func (b *Board) checkEmptyRow(row int) (resultChanged, resultConflicted bool) {
-	if sumListWithSeparator(b.rowHint[row]) == -1 {
-		for col := 0; col < b.rowHint[row][0]; col++ {
+	if sumListWithSeparator(b.rowHint[row]) <= 0 {
+		for col := 0; col < b.dimension; col++ {
 			changed, conflicted := b.fillPosition(row, col, EMPTY)
 			if conflicted {
 				return resultChanged, true
@@ -107,7 +107,7 @@ func (b *Board) checkEmptyRow(row int) (resultChanged, resultConflicted bool) {
 	return
 }
 
-func (b *Board) checkEmpty() (resultChanged, resultConflicted bool) {
+func checkEmpty(b *Board) (resultChanged, resultConflicted bool) {
 	for i := 0; i < b.dimension; i++ {
 		changed, conflicted := b.checkEmptyRow(i)
 		if conflicted {

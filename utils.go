@@ -3,7 +3,9 @@ package ptsolver
 func sumListWithSeparator(input []int) int {
 	result := 0
 	for _, hint := range input {
-		result += hint + 1
+		if hint != 0 {
+			result += hint + 1
+		}
 	}
 	return result - 1
 }

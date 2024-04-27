@@ -23,7 +23,7 @@ type Board struct {
 	solved     bool
 	conflicted bool
 
-	solverFunctionList []func() (bool, bool)
+	solverFunctionList []func(b *Board) (bool, bool)
 
 	rotatedDegree int
 }
@@ -106,7 +106,7 @@ func (b *Board) Solve() bool {
 	for changed {
 		changed = false
 		for _, solver := range b.solverFunctionList {
-			tmpChanged, conflicted := solver()
+			tmpChanged, conflicted := solver(b)
 			changed = changed || tmpChanged
 			if conflicted {
 				b.conflicted = true
@@ -115,7 +115,7 @@ func (b *Board) Solve() bool {
 			// use same function for column
 			b.rotateClockwise()
 
-			tmpChanged, conflicted = solver()
+			tmpChanged, conflicted = solver(b)
 			changed = changed || tmpChanged
 			if conflicted {
 				b.conflicted = true
@@ -148,10 +148,10 @@ func Init(dimension int, rowHint, colHint [][]int) Board {
 		conflicted:    false,
 		rotatedDegree: 0,
 	}
-	b.solverFunctionList = []func() (bool, bool){
-		b.sumToDimension,
-		b.checkStartOrEndOf,
-		b.checkEmpty,
+	b.solverFunctionList = []func(*Board) (bool, bool){
+		sumToDimension,
+		checkStartOrEndOf,
+		checkEmpty,
 		// to be added
 	}
 	return b
